@@ -7,7 +7,7 @@ import discAutoMsg.discord_automessage as discAutoMsg
 daComplimentList,daDefenseList,daAngryResponseList,daHappyResponseList,daSadResponseList,daFearfulResponseList, daSurprisedResponseList = getResponses()
 
 
-reactTo,channelIDtoMsg,daGuildID = getScope()
+reactTo,channelIDtoMsg = getScope()
 msgAsReply,msgPingReply = getMisc()
 
 def createCompliment(emotions):
@@ -45,13 +45,14 @@ while True:
     # print("Start of Loop")
     for channelID in list(channelIDtoMsg.keys()):
         #print("Start of for loop")
-        daRecentMessage = discAutoMsg.getMessages(channelID,1)[0]
+        daRecentMessage = discAutoMsg.getMessages(channelID,1,False)[0]
         if daRecentMessage != channelIDtoMsg[channelID]:
             daMessageID = daRecentMessage["id"]
             daMessageText = daRecentMessage["content"]
             print(daRecentMessage)
             channelIDtoMsg[channelID] = daRecentMessage
             if channelIDtoMsg[channelID]["author"]["id"] == reactTo:
+                discAutoMsg.displayTyping(channelID,2)
                 print(daMessageText)
                 print(te.get_emotion(daMessageText))
                 daEmotionParam = te.get_emotion(daMessageText)
