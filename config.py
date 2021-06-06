@@ -23,11 +23,8 @@ daSadResponseList = ["Oh, that's so sad. ", "That's unfortunate, but you should 
 daFearfulResponseList = ["It's gonna be okay, ", "It will be fine, ", "You'll get through this, "]
 #Put list of channel ids
 daChannelList = ["000000000000000000","000000000000000000","000000000000000000"]
-daServer = "000000000000000000"#put the server id
 msgAsReply = True
 msgPingReply = False
-
-
 #You don't need to change anything under this
 daChannelDictionary = dict.fromkeys(daChannelList, "")
 def getCreds():
@@ -35,6 +32,6 @@ def getCreds():
 def getResponses():
     return(daComplimentList,daDefenseList,daAngryResponseList,daHappyResponseList,daSadResponseList,daFearfulResponseList, daSurprisedResponseList)
 def getScope():
-    return(daUser,daChannelDictionary,daServer)
+    return(daUser,daChannelDictionary)
 def getMisc():
     return(msgAsReply, msgPingReply)
