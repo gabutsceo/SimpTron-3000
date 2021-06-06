@@ -30,6 +30,7 @@ def sendMessage(daChannelID, daMessage):
     global daCount
 
     headers = {
+    'cookie': daDiscordCookies["__dcfduid"],
     'authorization': daToken,
     'Content-Type': "application/json"
     }
@@ -43,10 +44,11 @@ def sendMessage(daChannelID, daMessage):
     requests.request("POST", url+"/api/v9/channels/"+str(daChannelID)+"/messages", json = payload, headers = headers)
     daCount += 1
     time.sleep(.25)
-def sendReply(daChannelID, daMessage, msgToReply, pingInReply = False, log = True):
+def sendReply(daChannelID, daMessage, msgToReply, pingInReply = True, log = True):
     global daCount
 
     headers = {
+    'cookie': daDiscordCookies["__dcfduid"],
     'authorization': daToken,
     'Content-Type': "application/json"
     }
@@ -60,14 +62,16 @@ def sendReply(daChannelID, daMessage, msgToReply, pingInReply = False, log = Tru
         "message_id":msgToReply
         }
     }
-    print("Payload:"+payload)
-    payload = payload.encode(encoding='utf-8')
+    if pingInReply == False:
+        payload["allowed_mentions"] = {"parse":["users","roles","everyone"],"replied_user":False}
+    print("Payload:"+str(payload))
   
-    requests.request("POST", url+"/api/v9/channels/"+daChannelID+"/messages", json = payload, headers = headers)
+    requests.request("POST", url+"/api/v9/channels/"+str(daChannelID)+"/messages", json = payload, headers = headers)
     daCount += 1
     time.sleep(.25)
 def getMessages(daChannelID, daRange):
     headers = {
+    'cookie': daDiscordCookies["__dcfduid"],
     'authorization': daToken,
     'Content-Type': "application/json"
     }
@@ -78,10 +82,10 @@ def getMessages(daChannelID, daRange):
 def displayTyping(daChannelID, daDuration):
     times = round(daDuration/1)
     headers = {
-    'cookie': "__dcfduid=",
+    'cookie': daDiscordCookies["__dcfduid"],
     'authorization': daToken,
     'Content-Type': "application/json"
     }
-    for i in range(times):
+    for interval in range(times):
         requests.request("POST", url+"/api/v9/channels/"+str(daChannelID)+"/typing", json = "", headers = headers)
         time.sleep(1)
