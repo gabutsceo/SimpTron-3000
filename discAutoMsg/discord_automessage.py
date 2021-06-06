@@ -1,5 +1,6 @@
 import requests
 import json,time
+import random
 from config import getCreds
 #LOGIN#
 url = "https://discord.com"
@@ -24,11 +25,13 @@ print(loginResponse.text)
 daToken = eval(loginResponse.text)["token"]
 #LOGIN IS DONE AT THIS POINT#
 
-daCount = 0
+def createNonce():
+    daNonce = ""
+    for digit in range(1,16):
+        daNonce += str(random.randint(0,9))
+    return(daNonce)
 
-def sendMessage(daChannelID, daMessage):
-    global daCount
-
+def sendMessage(daChannelID, daMessage, log = True):
     headers = {
     'cookie': daDiscordCookies["__dcfduid"],
     'authorization': daToken,
@@ -36,16 +39,14 @@ def sendMessage(daChannelID, daMessage):
     }
 
     payload ={"content": daMessage,
-    "nonce": str(daCount),
+    "nonce": str(createNonce()),
     "tts": False}
     
-    
-    print("Payload:"+str(payload))
+    if log == True:
+        print("Payload:"+str(payload))
     requests.request("POST", url+"/api/v9/channels/"+str(daChannelID)+"/messages", json = payload, headers = headers)
-    daCount += 1
     time.sleep(.25)
 def sendReply(daChannelID, daMessage, msgToReply, pingInReply = True, log = True):
-    global daCount
 
     headers = {
     'cookie': daDiscordCookies["__dcfduid"],
@@ -55,7 +56,7 @@ def sendReply(daChannelID, daMessage, msgToReply, pingInReply = True, log = True
 
     payload = {
     "content": daMessage,
-    "nonce": str(daCount),
+    "nonce": str(createNonce()),
     "tts": False,
     "message_reference": {
         "channel_id":daChannelID,
@@ -64,20 +65,22 @@ def sendReply(daChannelID, daMessage, msgToReply, pingInReply = True, log = True
     }
     if pingInReply == False:
         payload["allowed_mentions"] = {"parse":["users","roles","everyone"],"replied_user":False}
-    print("Payload:"+str(payload))
+    if log == True:
+        print("Payload:"+str(payload))
   
     requests.request("POST", url+"/api/v9/channels/"+str(daChannelID)+"/messages", json = payload, headers = headers)
-    daCount += 1
     time.sleep(.25)
-def getMessages(daChannelID, daRange):
+def getMessages(daChannelID, daRange, log = True):
     headers = {
     'cookie': daDiscordCookies["__dcfduid"],
     'authorization': daToken,
     'Content-Type': "application/json"
     }
-    print(url+"/api/v9/channels/"+str(daChannelID)+"/messages")
+    if log == True:
+        print(url+"/api/v9/channels/"+str(daChannelID)+"/messages")
     daChannelMessages = requests.request("GET", url+"/api/v9/channels/"+str(daChannelID)+"/messages", headers = headers)
-    print(daChannelMessages)
+    if log == True:
+        print(daChannelMessages)
     data = json.loads(daChannelMessages.text)
     return(data[0:daRange])
 def displayTyping(daChannelID, daDuration):
@@ -90,4 +93,3 @@ def displayTyping(daChannelID, daDuration):
     for interval in range(times):
         requests.request("POST", url+"/api/v9/channels/"+str(daChannelID)+"/typing", json = "", headers = headers)
         time.sleep(1)
-getMessages("716140536095965194",1)
